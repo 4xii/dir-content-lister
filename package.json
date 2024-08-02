@@ -15,7 +15,7 @@
     "dist"
   ],
   "bin": {
-    "typemir": "./cli.mjs"
+    "dcl": "./cli.mjs"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
