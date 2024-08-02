@@ -1,0 +1,5 @@
+# Dependency directory
+node_modules
+
+dist
+dir-content-lister-test

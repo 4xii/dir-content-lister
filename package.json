@@ -1,0 +1,36 @@
+{
+  "name": "dir-content-lister",
+  "type": "module",
+  "version": "0.0.1",
+  "author": "4xii",
+  "homepage": "https://github.com/4xii/dir-content-lister/blob/main/README.md",
+  "bugs": {
+    "url": "https://github.com/4xii/dir-content-lister/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/4xii/dir-content-lister.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "typemir": "./cli.mjs"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup --clean --dts",
+    "prepare:type": "tsup --dts-only",
+    "stub": "tsup --watch --onSuccess 'tsup --dts-only'",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.31",
+    "vitest": "^1.6.0"
+  },
+  "dependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}
