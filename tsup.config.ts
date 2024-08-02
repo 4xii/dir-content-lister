@@ -2,8 +2,6 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: {
-    index: 'src/index.ts',         // 主入口文件
-    client: 'src/client.ts',       // 单独打包 client
     cli: 'src/cli.ts'              // 命令行工具入口
   },
   splitting: false,                // 关闭代码分割，除非你需要
