@@ -1,51 +1,66 @@
-
 # directory-content-list
 
-`directory-content-list` 是一个简单的Node.js命令行工具，它可以帮助你将当前目录及其所有子目录下的 `.ts` 文件的文件名和内容输出到一个文本文件中。这个工具特别适合于需要快速获取目录树中TypeScript文件概览的开发者。
+`directory-content-list` is a practical Node.js command-line tool designed for developers to quickly aggregate content from multiple files, facilitating context-rich conversations with AI assistants like GPT.
 
-## 安装
+## Key Features
 
-你可以通过npm来全局安装 `directory-content-list`：
+- Traverse the current directory and all its subdirectories
+- Collect file contents with specified extensions (default is .ts)
+- Output collected content to a file or clipboard
+- Easily provide multi-file context to AI assistants
+
+## Installation
+
+Install `directory-content-list` globally:
 
 ```bash
 npm install -g directory-content-list
 ```
 
-这会将 `dcl` 命令添加到你的系统路径中，使其可以在任何目录下执行。
+After installation, the `dcl` command will be available in any directory.
 
-## 使用
+## Usage
 
-安装完成后，你可以在任何你想要列出 `.ts` 文件内容的目录下执行 `dcl` 命令：
+Execute in the target directory:
 
 ```bash
-dcl
+dcl [extension] [-c] [-oc]
 ```
 
-执行该命令将会遍历当前目录及其所有子目录，寻找所有的 `.ts` 文件，并将每个文件的相对路径和内容输出到当前目录下的 `output.txt` 文件中。
+Parameters:
+- `[extension]`: Optional, specify the file extension to collect (without dot, e.g., ts, js). Defaults to .ts if not specified.
+- `-c`: Optional, copy the result to the clipboard.
+- `-oc`: Optional, only copy the result to the clipboard, without generating an output file.
 
-输出格式如下：
-
-```
-file1.ts
-xxxx
-
-file2.ts
-xxxx
-
-subdir/file3.ts
-xxxx
+Examples:
+```bash
+dcl js -c  # Collect all .js file contents, output to file and copy to clipboard
+dcl -oc    # Collect all file contents, only copy to clipboard
 ```
 
-其中，`xxxx` 表示文件的实际内容。
+## Output Format
 
-## 输出文件
+```
+File1 Path
+File1 Content
 
-默认情况下，所有内容都会被写入到当前工作目录下的 `output.txt` 文件中。如果该文件已存在，它会被覆盖。
+File2 Path
+File2 Content
 
-## 注意
+...
+```
 
-- 该工具仅支持 `.ts` 文件。如果你需要支持其他文件扩展名，你需要修改源代码。
-- 由于文件读取是异步的，如果有大量文件，命令行的返回可能在所有文件都处理完之前就显示了。
+## Use Cases
+
+1. Code Review: Quickly collect relevant file contents for AI-assisted code review.
+2. Problem Diagnosis: Gather multiple related files to provide AI assistants with a comprehensive context.
+3. Refactoring Suggestions: Provide entire module or component file contents to AI for refactoring advice.
+4. Documentation Generation: Collect multiple source file contents for AI-assisted project documentation.
+
+## Notes
+
+- By default, `node_modules`, `.git`, `dist`, and `build` directories are ignored.
+- When using in large projects, be mindful of the output size, which may exceed AI assistant input limits.
 
 ## License
 

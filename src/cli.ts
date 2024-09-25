@@ -30,7 +30,7 @@ function listFilesAndContent(dir: string, extensions: string[], parentPrefix = '
         const content = fs.readFileSync(filePath, 'utf8');
         output += `${relPath}\n${content}\n\n`;
       } catch (error) {
-        console.error(`无法读取文件 ${filePath}: ${error}`);
+        console.error(`无法读取文件 ${filePath}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
   }
@@ -41,8 +41,8 @@ function listFilesAndContent(dir: string, extensions: string[], parentPrefix = '
 // 解析命令行参数
 const args = process.argv.slice(2);
 const extensions = args.filter(arg => !arg.startsWith('-'));
-const copyToClipboard = args.includes('c') || args.includes('oc');
-const onlyClipboard = args.includes('oc');
+const copyToClipboard = args.includes('-c') || args.includes('-oc');
+const onlyClipboard = args.includes('-oc');
 
 // 获取文件内容
 const content = listFilesAndContent(process.cwd(), extensions);
