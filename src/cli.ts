@@ -1,41 +1,64 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import clipboard from 'clipboardy'
 
 const outputFilePath = path.join(process.cwd(), 'output.txt');
 
-function listFilesAndContent(dir: string, parentPrefix = '') {
-  fs.readdir(dir, { withFileTypes: true }, (err, dirents) => {
-    if (err) {
-      console.error('Error reading directory ' + dir, err);
-      return;
+// 定义要忽略的目录和文件
+const ignoredPaths = ['node_modules', '.git', 'dist', 'build'];
+
+function listFilesAndContent(dir: string, extensions: string[], parentPrefix = '') {
+  let output = '';
+
+  const dirents = fs.readdirSync(dir, { withFileTypes: true });
+
+  for (const dirent of dirents) {
+    const relPath = path.join(parentPrefix, dirent.name);
+
+    // 检查是否应该忽略这个路径
+    if (ignoredPaths.some(ignoredPath => relPath.includes(ignoredPath))) {
+      continue;
     }
 
-    dirents.forEach((dirent) => {
-      const relPath = path.join(parentPrefix, dirent.name);
-
-      if (dirent.isDirectory()) {
-        // 如果是目录，则递归调用
-        listFilesAndContent(path.join(dir, dirent.name), relPath + '/');
-      } else if (path.extname(dirent.name) === '.ts') {
-        // 如果是.ts文件，读取内容并写入输出文件
-        const filePath = path.join(dir, dirent.name);
-        fs.readFile(filePath, 'utf8', (err, content) => {
-          if (err) {
-            console.error('Error reading file ' + filePath, err);
-            return;
-          }
-          // 将文件名和内容追加到输出文件
-          fs.appendFileSync(outputFilePath, `${relPath}\n${content}\n\n`);
-        });
+    if (dirent.isDirectory()) {
+      // 如果是目录，则递归调用
+      output += listFilesAndContent(path.join(dir, dirent.name), extensions, relPath + '/');
+    } else if (dirent.isFile() && (extensions.length === 0 || extensions.includes(path.extname(dirent.name).slice(1)))) {
+      // 如果是文件，并且没有指定扩展名或者文件扩展名匹配，则读取内容
+      const filePath = path.join(dir, dirent.name);
+      try {
+        const content = fs.readFileSync(filePath, 'utf8');
+        output += `${relPath}\n${content}\n\n`;
+      } catch (error) {
+        console.error(`无法读取文件 ${filePath}: ${error}`);
       }
-    });
-  });
+    }
+  }
+
+  return output;
 }
 
-// 清空输出文件或创建一个新文件
-fs.writeFileSync(outputFilePath, '');
+// 解析命令行参数
+const args = process.argv.slice(2);
+const extensions = args.filter(arg => !arg.startsWith('-'));
+const copyToClipboard = args.includes('c') || args.includes('oc');
+const onlyClipboard = args.includes('oc');
 
-// 开始从当前目录读取
-listFilesAndContent(process.cwd());
+// 获取文件内容
+const content = listFilesAndContent(process.cwd(), extensions);
 
-console.log(`Files and contents have been written to ${outputFilePath}`);
+if (!onlyClipboard) {
+  // 写入输出文件
+  fs.writeFileSync(outputFilePath, content);
+  console.log(`文件内容已写入 ${outputFilePath}`);
+}
+
+if (copyToClipboard) {
+  // 复制到剪贴板
+  clipboard.writeSync(content);
+  console.log('文件内容已复制到剪贴板');
+}
+
+if (!copyToClipboard && !onlyClipboard) {
+  console.log(content);
+}
